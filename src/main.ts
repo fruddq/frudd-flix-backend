@@ -3,7 +3,7 @@ import { router } from './routes/api.js'
 
 const app = express()
 
-app.use('/home', router)
+app.use('/', router)
 
 const port = process.env['PORT'] || 3000
 
