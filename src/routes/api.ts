@@ -10,3 +10,8 @@ router.get('/home', async (_req, res) => {
   const results = await api.fetchData(requestDiscover)
   res.send(results)
 })
+
+// router.get('/test', async (_req, res) => {
+//   const results = await api.fetchData(requestDiscover)
+//   res.send(results)
+// })
