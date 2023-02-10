@@ -1,28 +1,12 @@
-// import express from "express"
-// import { Sequelize, DataTypes, ModelCtor, Model } from "sequelize"
-// import { API } from "./API"
+import express from 'express'
+import { router } from './routes/api.js'
 
-// const app = express()
+const app = express()
 
-// app.post("/v1/tables/:tableID", function (_req, res) {
-//   console.log(_req.params)
+app.use('/home', router)
 
-//   res.send({
-//     availableTables: [1, 2, 3, 4],
-//   })
-// })
+const port = process.env['PORT'] || 3000
 
-//https://www.npmjs.com/package/ajv validate user inputs
-// app.get("/v1/tables/:tableID", function (_req, res) {
-//   console.log(_req.params)
-
-//   res.send({
-//     availableTables: [1, 2, 3, 4],
-//   })
-// })
-
-// figure out how to save stuff in db
-// how to get stuff, get in frontend throuugh fetch from this DB.
-// vitestnpm
-
-// app.listen(7000)
+app.listen(port, () => {
+  console.log(`Server is listening on port ${port}`)
+})

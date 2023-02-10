@@ -21,7 +21,7 @@ export class API {
   }
 }
 
-const api = new API()
+// const api = new API()
 
-const test = await api.fetchData(requestDiscover)
-console.log(test)
+// const test = await api.fetchData(requestDiscover)
+// console.log(test)
