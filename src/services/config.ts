@@ -1,8 +1,7 @@
 import dotenv from 'dotenv'
 dotenv.config()
 
-export const API_URL = 'https://api.themoviedb.org/3/discover/movie'
-export const API_CONFIG = { params: { api_key: process.env['API_KEY'] } }
+export const API_URL = 'https://api.themoviedb.org/4/discover/movie'
 
 export const genreList = [
   { id: 28, name: 'Action' },

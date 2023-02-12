@@ -23,3 +23,28 @@ export interface IAPIResponse {
     total_results: number
   }
 }
+
+interface IAPIConfigParams {
+  api_key: string
+  language?: string
+  sort_by?: string
+  include_adult?: boolean
+  include_video?: boolean
+  page?: number
+  'primary_release_date.gte'?: string
+  'primary_release_date.lte'?: string
+  with_genres?: string
+}
+
+export interface IAPIConfig {
+  params: IAPIConfigParams
+  url: string
+  method: string
+}
+
+export interface IFetchDataParams {
+  from?: number
+  to?: number
+  genres?: number[]
+  page?: number
+}

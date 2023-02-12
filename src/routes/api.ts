@@ -1,5 +1,6 @@
 import axios from 'axios'
 import express from 'express'
+import { type } from 'os'
 import { API } from '../API.js'
 
 export const router = express.Router()
@@ -19,7 +20,11 @@ router.get('/browse', (req, res) => {
   res.send(`${from}, ${to}, and ${genres} `)
 })
 
-export const fetchFrontEnd = async (from: number, to: number, genres: string) => {
+export const fetchFrontEnd = async ({
+  from,
+  to,
+  genres,
+}: { readonly from: number; readonly to: number; readonly genres: number[] }) => {
   try {
     const response = await axios.get('http://localhost:3000/browse', {
       params: {
@@ -33,6 +38,12 @@ export const fetchFrontEnd = async (from: number, to: number, genres: string) =>
     console.error(error)
   }
 }
-;(async () => {
-  console.log(await fetchFrontEnd(2022, 2023, '1,2,3'))
-})()
+
+// ;(async () => {
+//   const request = {
+//     from: 2022,
+//     to: 2023,
+//     genres: [1, 2, 3],
+//   }
+//   console.log(await fetchFrontEnd(request))
+// })()
