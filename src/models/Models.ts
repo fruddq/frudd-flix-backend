@@ -43,8 +43,9 @@ export interface IAPIConfig {
 }
 
 export interface IFetchDataParams {
-  from?: number
-  to?: number
-  genres?: number[]
-  page?: number
+  from?: number | undefined
+  to?: number | undefined
+  genres?: number[] | undefined
+  page?: number | undefined
+  movieID?: number | undefined
 }

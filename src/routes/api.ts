@@ -1,6 +1,5 @@
 import axios from 'axios'
 import express from 'express'
-import { type } from 'os'
 import { API } from '../API.js'
 
 export const router = express.Router()
@@ -12,38 +11,56 @@ router.get('/home', async (_req, res) => {
   res.send(results)
 })
 
-router.get('/browse', (req, res) => {
-  const from = Number(req.query['from'])
-  const to = Number(req.query['to'])
-  const genres = req.query['genres']
-  console.log(genres)
-  res.send(`${from}, ${to}, and ${genres} `)
+router.get('/browse', async (req, res) => {
+  const from = req.query['from'] ? Number(req.query['from']) : undefined
+  const to = req.query['to'] ? Number(req.query['to']) : undefined
+  const page = req.query['page'] ? Number(req.query['page']) : undefined
+  let genres: number[] | undefined
+
+  const stringGenres = req.query['genres']
+    ? Array.isArray(req.query['genres'])
+      ? req.query['genres']
+      : [req.query['genres']]
+    : undefined
+
+  if (Array.isArray(stringGenres)) {
+    genres = stringGenres.map(Number)
+  }
+
+  const results = await api.fetchData({ from, to, genres, page })
+  res.send(results)
 })
 
-export const fetchFrontEnd = async ({
-  from,
-  to,
-  genres,
-}: { readonly from: number; readonly to: number; readonly genres: number[] }) => {
-  try {
-    const response = await axios.get('http://localhost:3000/browse', {
-      params: {
-        from,
-        to,
-        genres,
-      },
-    })
-    return response.data
-  } catch (error) {
-    console.error(error)
-  }
-}
-
+// export const fetchFrontEnd = async ({
+//   from,
+//   to,
+//   genres,
+//   page,
+// }: {
+//   readonly from?: number
+//   readonly to?: number
+//   readonly genres?: number[]
+//   readonly page?: number
+// }) => {
+//   try {
+//     const response = await axios.get('http://localhost:3000/browse', {
+//       params: {
+//         from,
+//         to,
+//         genres,
+//         page,
+//       },
+//     })
+//     return response.data
+//   } catch (error) {
+//     console.error(error)
+//   }
+// }
 // ;(async () => {
 //   const request = {
-//     from: 2022,
+//     from: 2023,
 //     to: 2023,
-//     genres: [1, 2, 3],
+//     // genres: [37],
 //   }
 //   console.log(await fetchFrontEnd(request))
 // })()

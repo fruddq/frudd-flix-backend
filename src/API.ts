@@ -15,7 +15,25 @@ export class API {
     }
   }
 
-  async fetchData({ from, to, genres, page }: IFetchDataParams = {}) {
+  async fetchData({ from, to, genres, page, movieID }: IFetchDataParams = {}) {
+    if (movieID) {
+      const API_CONFIG = {
+        url: `https://api.themoviedb.org/3/movie/${movieID}`,
+        method: 'get',
+        params: {
+          api_key: this.apiKey,
+        },
+      }
+
+      try {
+        const response: IAPIResponse = await axios(API_CONFIG)
+        return response.data
+      } catch (err) {
+        console.error(err)
+        return []
+      }
+    }
+
     if ((from && from > 2023) || (from && from < 1950)) {
       throw new Error('From can only be a number between 1950 to 2023')
     }
@@ -34,7 +52,7 @@ export class API {
     }
 
     const API_CONFIG: IAPIConfig = {
-      url: API_URL,
+      url: `${API_URL}discover/movie`,
       method: 'get',
       params: {
         api_key: this.apiKey,
@@ -42,7 +60,7 @@ export class API {
         sort_by: 'popularity.desc',
         include_adult: false,
         include_video: false,
-        page: page ?? 1, // @TODO make this into a param
+        page: page ?? 1,
       },
     }
 
@@ -61,7 +79,6 @@ export class API {
 
     try {
       const response: IAPIResponse = await axios(API_CONFIG)
-      console.log(response.data.results)
       return response.data
     } catch (err) {
       console.error(err)
@@ -72,7 +89,7 @@ export class API {
 
 // const api = new API()
 
-// const request = { from: 2023, to: 2023, genres: [28, 18] }
+// const request = { movieID: 505642 }
 // const test = await api.fetchData(request)
 // console.log(test)
 
@@ -126,6 +143,16 @@ export class API {
 // },
 // }
 
-// Then you can make the API request like this:
-
 // const response: IAPIResponse = await axios.get(API_URL, API_CONFIG)
+
+// const API_URL3 = 'https://api.themoviedb.org/3/movie/'
+// const config3 = {
+//   url: https://api.themoviedb.org/3/movie/ + 505642,
+//   method: 'get',
+//   params: {
+//     api_key: 'edfb4a11c2c5f2ff5f3e1ef08db80649',
+//   },
+// }
+
+// const test3 = await axios(config3)
+// console.log(test3.data)
