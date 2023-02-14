@@ -70,60 +70,77 @@ export class API {
   }
 
   async fetchDataFromID(movieID: number) {
-    if (movieID) {
-      const API_CONFIG = {
-        url: `https://api.themoviedb.org/3/movie/${movieID}`,
-        method: 'get',
-        params: {
-          api_key: this.apiKey,
-          append_to_response: 'release_date,videos',
-        },
-      }
-
-      try {
-        const response: APIResponseFromID = await axios(API_CONFIG)
-
-        const {
-          adult,
-          backdrop_path,
-          id,
-          original_language,
-          original_title,
-          overview,
-          popularity,
-          poster_path,
-          title,
-          vote_average,
-          vote_count,
-          release_date,
-          genres,
-          video,
-        } = response.data
-
-        const resultFromID: IMovie = {
-          adult,
-          backdrop_path,
-          id,
-          original_language,
-          original_title,
-          overview,
-          popularity,
-          poster_path,
-          title,
-          vote_average,
-          vote_count,
-          release_date,
-          genre_ids: lodash.map(genres, 'id'),
-          video,
-        }
-
-        return resultFromID
-      } catch (err) {
-        console.error(err)
-        return []
-      }
+    const API_CONFIG = {
+      url: `https://api.themoviedb.org/3/movie/${movieID}`,
+      method: 'get',
+      params: {
+        api_key: this.apiKey,
+        append_to_response: 'release_date,videos',
+      },
     }
-    return []
+
+    try {
+      const response: APIResponseFromID = await axios(API_CONFIG)
+
+      const {
+        adult,
+        backdrop_path,
+        id,
+        original_language,
+        original_title,
+        overview,
+        popularity,
+        poster_path,
+        title,
+        vote_average,
+        vote_count,
+        release_date,
+        genres,
+        video,
+      } = response.data
+
+      const resultFromID: IMovie = {
+        adult,
+        backdrop_path,
+        id,
+        original_language,
+        original_title,
+        overview,
+        popularity,
+        poster_path,
+        title,
+        vote_average,
+        vote_count,
+        release_date,
+        genre_ids: lodash.map(genres, 'id'),
+        video,
+      }
+
+      return resultFromID
+    } catch (err) {
+      console.error(err)
+      return []
+    }
+  }
+
+  async fetchDataFromSearch(query: string) {
+    const API_CONFIG = {
+      url: 'https://api.themoviedb.org/3/search/movie',
+      method: 'get',
+      params: {
+        api_key: this.apiKey,
+        include_adult: false,
+        query,
+      },
+    }
+
+    try {
+      const response: IAPIResponse = await axios(API_CONFIG)
+      return response.data
+    } catch (err) {
+      console.error(err)
+      return []
+    }
   }
 }
 
@@ -185,12 +202,14 @@ export class API {
 
 // const response: IAPIResponse = await axios.get(API_URL, API_CONFIG)
 
-// const API_URL3 = 'https://api.themoviedb.org/3/movie/'
+// const API_URL3 = 'https://api.themoviedb.org/3/search/movie'
 // const config3 = {
-//   url: https://api.themoviedb.org/3/movie/ + 505642,
+//   url: API_URL3,
 //   method: 'get',
 //   params: {
 //     api_key: 'edfb4a11c2c5f2ff5f3e1ef08db80649',
+//     include_adult: false,
+//     query: 'wakanda',
 //   },
 // }
 

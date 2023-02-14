@@ -1,4 +1,4 @@
-// import axios from 'axios'
+import axios from 'axios'
 import express from 'express'
 import { API } from '../API.js'
 
@@ -9,6 +9,12 @@ const api = new API()
 router.get('/id', async (req, res) => {
   const results = await api.fetchDataFromID(Number(req.query['movieID']))
 
+  res.send(results)
+})
+
+router.get('/search', async (req, res) => {
+  const query: string = req.query['query'] as string
+  const results = await api.fetchDataFromSearch(query)
   res.send(results)
 })
 
@@ -29,6 +35,7 @@ router.get('/', async (req, res) => {
   }
 
   const results = await api.fetchData({ from, to, genres, page })
+
   res.send(results)
 })
 
@@ -84,3 +91,22 @@ router.get('/', async (req, res) => {
 //   const test = await fetchFrontEnd1(request)
 //   console.log(test)
 // })()
+
+export const fetchFrontEnd2 = async (query: string) => {
+  try {
+    const response = await axios.get('http://localhost:3000/search', {
+      params: {
+        query,
+      },
+    })
+
+    return response.data
+  } catch (error) {
+    console.error(error)
+  }
+}
+;(async () => {
+  const request = 'spiderman'
+  const test = await fetchFrontEnd2(request)
+  console.log(test)
+})()
