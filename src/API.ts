@@ -3,7 +3,6 @@ import lodash from 'lodash'
 import type { APIResponseFromID, IAPIConfig, IAPIResponse, IFetchDataParams, IMovie } from './models/Models.js'
 import { API_URL, genreList } from './services/config.js'
 import dotenv from 'dotenv'
-import { Console } from 'console'
 
 export class API {
   apiKey: string
@@ -17,7 +16,60 @@ export class API {
     }
   }
 
-  async fetchData({ from, to, genres, page, movieID }: IFetchDataParams = {}) {
+  async fetchData({ from, to, genres, page }: IFetchDataParams = {}) {
+    if ((from && from > 2023) || (from && from < 1950)) {
+      throw new Error('From can only be a number between 1950 to 2023')
+    }
+
+    if ((to && to > 2023) || (to && to < 1950)) {
+      throw new Error('From can only be a number between 1950 to 2023')
+    }
+
+    let genreIdsStr: string | undefined
+    if (genres) {
+      const invalidGenres = genres.filter((genreId) => !genreList.find((genre) => genre.id === genreId))
+      if (invalidGenres.length > 0) {
+        throw new Error('Genres must be a valid genre ID from genreList')
+      }
+      genreIdsStr = genres.join(',')
+    }
+
+    const API_CONFIG: IAPIConfig = {
+      url: `${API_URL}discover/movie`,
+      method: 'get',
+      params: {
+        api_key: this.apiKey,
+        language: 'en-US',
+        sort_by: 'popularity.desc',
+        include_adult: false,
+        include_video: false,
+        page: page ?? 1,
+      },
+    }
+
+    if (from && to) {
+      API_CONFIG.params['primary_release_date.gte'] = `${from}-01-01`
+      API_CONFIG.params['primary_release_date.lte'] = `${to}-12-31`
+    } else if (from) {
+      API_CONFIG.params['primary_release_date.gte'] = `${from}-01-01`
+    } else if (to) {
+      API_CONFIG.params['primary_release_date.lte'] = `${to}-12-31`
+    }
+
+    if (genreIdsStr) {
+      API_CONFIG.params.with_genres = genreIdsStr
+    }
+
+    try {
+      const response: IAPIResponse = await axios(API_CONFIG)
+      return response.data
+    } catch (err) {
+      console.error(err)
+      return []
+    }
+  }
+
+  async fetchDataFromID(movieID: number) {
     if (movieID) {
       const API_CONFIG = {
         url: `https://api.themoviedb.org/3/movie/${movieID}`,
@@ -71,64 +123,14 @@ export class API {
         return []
       }
     }
-
-    if ((from && from > 2023) || (from && from < 1950)) {
-      throw new Error('From can only be a number between 1950 to 2023')
-    }
-
-    if ((to && to > 2023) || (to && to < 1950)) {
-      throw new Error('From can only be a number between 1950 to 2023')
-    }
-
-    let genreIdsStr: string | undefined
-    if (genres) {
-      const invalidGenres = genres.filter((genreId) => !genreList.find((genre) => genre.id === genreId))
-      if (invalidGenres.length > 0) {
-        throw new Error('Genres must be a valid genre ID from genreList')
-      }
-      genreIdsStr = genres.join(',')
-    }
-
-    const API_CONFIG: IAPIConfig = {
-      url: `${API_URL}discover/movie`,
-      method: 'get',
-      params: {
-        api_key: this.apiKey,
-        language: 'en-US',
-        sort_by: 'popularity.desc',
-        include_adult: false,
-        include_video: false,
-        page: page ?? 1,
-      },
-    }
-
-    if (from && to) {
-      API_CONFIG.params['primary_release_date.gte'] = `${from}-01-01`
-      API_CONFIG.params['primary_release_date.lte'] = `${to}-12-31`
-    } else if (from) {
-      API_CONFIG.params['primary_release_date.gte'] = `${from}-01-01`
-    } else if (to) {
-      API_CONFIG.params['primary_release_date.lte'] = `${to}-12-31`
-    }
-
-    if (genreIdsStr) {
-      API_CONFIG.params.with_genres = genreIdsStr
-    }
-
-    try {
-      const response: IAPIResponse = await axios(API_CONFIG)
-      return response.data
-    } catch (err) {
-      console.error(err)
-      return []
-    }
+    return []
   }
 }
 
-const api = new API()
+// const api = new API()
 
-const request = { movieID: 505642 }
-const test = await api.fetchData(request)
+// const request = { movieID: 505642 }
+// const test = await api.fetchData(request)
 // console.log(test)
 
 // const API_URL2 =

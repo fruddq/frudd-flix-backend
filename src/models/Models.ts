@@ -47,7 +47,6 @@ export interface IFetchDataParams {
   to?: number | undefined
   genres?: number[] | undefined
   page?: number | undefined
-  movieID?: number | undefined
 }
 
 export interface IMovieFromID extends IMovie {

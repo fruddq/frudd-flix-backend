@@ -6,10 +6,11 @@ export const router = express.Router()
 
 const api = new API()
 
-// router.get('/home', async (_req, res) => {
-//   const results = await api.fetchData()
-//   res.send(results)
-// })
+router.get('/id', async (req, res) => {
+  const results = await api.fetchDataFromID(Number(req.query['movieID']))
+
+  res.send(results)
+})
 
 router.get('/', async (req, res) => {
   const from = req.query['from'] ? Number(req.query['from']) : undefined
@@ -63,4 +64,23 @@ router.get('/', async (req, res) => {
 //     // genres: [37],
 //   }
 //   console.log(await fetchFrontEnd(request))
+// })()
+
+// export const fetchFrontEnd1 = async (movieID: number) => {
+//   try {
+//     const response = await axios.get('http://localhost:3000/id', {
+//       params: {
+//         movieID,
+//       },
+//     })
+
+//     return response.data
+//   } catch (error) {
+//     console.error(error)
+//   }
+// }
+// ;(async () => {
+//   const request = 505642
+//   const test = await fetchFrontEnd1(request)
+//   console.log(test)
 // })()
