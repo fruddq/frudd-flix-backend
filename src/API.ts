@@ -1,7 +1,9 @@
 import axios from 'axios'
-import type { IAPIConfig, IAPIResponse, IFetchDataParams } from './models/Models.js'
+import lodash from 'lodash'
+import type { APIResponseFromID, IAPIConfig, IAPIResponse, IFetchDataParams, IMovie } from './models/Models.js'
 import { API_URL, genreList } from './services/config.js'
 import dotenv from 'dotenv'
+import { Console } from 'console'
 
 export class API {
   apiKey: string
@@ -22,12 +24,48 @@ export class API {
         method: 'get',
         params: {
           api_key: this.apiKey,
+          append_to_response: 'release_date,videos',
         },
       }
 
       try {
-        const response: IAPIResponse = await axios(API_CONFIG)
-        return response.data
+        const response: APIResponseFromID = await axios(API_CONFIG)
+
+        const {
+          adult,
+          backdrop_path,
+          id,
+          original_language,
+          original_title,
+          overview,
+          popularity,
+          poster_path,
+          title,
+          vote_average,
+          vote_count,
+          release_date,
+          genres,
+          video,
+        } = response.data
+
+        const resultFromID: IMovie = {
+          adult,
+          backdrop_path,
+          id,
+          original_language,
+          original_title,
+          overview,
+          popularity,
+          poster_path,
+          title,
+          vote_average,
+          vote_count,
+          release_date,
+          genre_ids: lodash.map(genres, 'id'),
+          video,
+        }
+
+        return resultFromID
       } catch (err) {
         console.error(err)
         return []
@@ -87,10 +125,10 @@ export class API {
   }
 }
 
-// const api = new API()
+const api = new API()
 
-// const request = { movieID: 505642 }
-// const test = await api.fetchData(request)
+const request = { movieID: 505642 }
+const test = await api.fetchData(request)
 // console.log(test)
 
 // const API_URL2 =

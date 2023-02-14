@@ -1,4 +1,4 @@
-import axios from 'axios'
+// import axios from 'axios'
 import express from 'express'
 import { API } from '../API.js'
 
@@ -6,12 +6,12 @@ export const router = express.Router()
 
 const api = new API()
 
-router.get('/home', async (_req, res) => {
-  const results = await api.fetchData()
-  res.send(results)
-})
+// router.get('/home', async (_req, res) => {
+//   const results = await api.fetchData()
+//   res.send(results)
+// })
 
-router.get('/browse', async (req, res) => {
+router.get('/', async (req, res) => {
   const from = req.query['from'] ? Number(req.query['from']) : undefined
   const to = req.query['to'] ? Number(req.query['to']) : undefined
   const page = req.query['page'] ? Number(req.query['page']) : undefined
@@ -43,7 +43,7 @@ router.get('/browse', async (req, res) => {
 //   readonly page?: number
 // }) => {
 //   try {
-//     const response = await axios.get('http://localhost:3000/browse', {
+//     const response = await axios.get('http://localhost:3000/', {
 //       params: {
 //         from,
 //         to,

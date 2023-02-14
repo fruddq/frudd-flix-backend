@@ -49,3 +49,36 @@ export interface IFetchDataParams {
   page?: number | undefined
   movieID?: number | undefined
 }
+
+export interface IMovieFromID extends IMovie {
+  belongs_to_collection?: {
+    id: number
+    name: string
+    poster_path: string
+    backdrop_path: string
+  }
+  budget?: number
+  genres?: { id: number; name: string }[]
+  homepage?: string
+  imdb_id?: string
+  production_companies?: {
+    id: number
+    logo_path: string
+    name: string
+    origin_country: string
+  }[]
+  production_countries?: { iso_3166_1: string; name: string }[]
+  revenue?: number
+  runtime?: number
+  spoken_languages?: {
+    english_name: string
+    iso_639_1: string
+    name: string
+  }[]
+  status?: string
+  tagline?: string
+}
+
+export interface APIResponseFromID {
+  data: IMovieFromID
+}
