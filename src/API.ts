@@ -123,14 +123,15 @@ export class API {
     }
   }
 
-  async fetchDataFromSearch(query: string) {
-    const API_CONFIG = {
+  async fetchDataFromSearch({ query, page }: { query: string; page: number }) {
+    const API_CONFIG: IAPIConfig = {
       url: 'https://api.themoviedb.org/3/search/movie',
       method: 'get',
       params: {
         api_key: this.apiKey,
         include_adult: false,
         query,
+        page,
       },
     }
 
@@ -209,9 +210,10 @@ export class API {
 //   params: {
 //     api_key: 'edfb4a11c2c5f2ff5f3e1ef08db80649',
 //     include_adult: false,
-//     query: 'wakanda',
+//     query: 'spiderman',
+//     page: 2,
 //   },
 // }
 
 // const test3 = await axios(config3)
-// console.log(test3.data)
+// console.log(test3.data.page)

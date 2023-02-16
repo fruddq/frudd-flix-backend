@@ -13,12 +13,13 @@ router.get('/id', async (req, res) => {
 })
 
 router.get('/search', async (req, res) => {
-  const query: string = req.query['query'] as string
-  const results = await api.fetchDataFromSearch(query)
+  const query = req.query['query'] as string
+  const page = Number(req.query['page'])
+  const results = await api.fetchDataFromSearch({ query, page })
   res.send(results)
 })
 
-router.get('/', async (req, res) => {
+router.get('/discover', async (req, res) => {
   const from = req.query['from'] ? Number(req.query['from']) : undefined
   const to = req.query['to'] ? Number(req.query['to']) : undefined
   const page = req.query['page'] ? Number(req.query['page']) : undefined
@@ -92,11 +93,12 @@ router.get('/', async (req, res) => {
 //   console.log(test)
 // })()
 
-export const fetchFrontEnd2 = async (query: string) => {
+export const fetchFrontEnd2 = async ({ query, page }: { query: string; page: number }) => {
   try {
     const response = await axios.get('http://localhost:3000/search', {
       params: {
         query,
+        page,
       },
     })
 
@@ -106,7 +108,7 @@ export const fetchFrontEnd2 = async (query: string) => {
   }
 }
 ;(async () => {
-  const request = 'spiderman'
+  const request = { query: 'spiderman', page: 1 }
   const test = await fetchFrontEnd2(request)
-  console.log(test)
+  console.log(test.results[0])
 })()
