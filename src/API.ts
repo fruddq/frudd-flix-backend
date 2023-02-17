@@ -1,8 +1,16 @@
 import axios from 'axios'
 import lodash from 'lodash'
-import type { APIResponseFromID, IAPIConfig, IAPIResponse, IFetchDataParams, IMovie } from './models/Models.js'
+import type {
+  APIResponseFromID,
+  APIResponseTrailer,
+  IAPIConfig,
+  IAPIResponse,
+  IFetchDataParams,
+  IMovie,
+} from './models/Models.js'
 import { API_URL, genreList } from './services/config.js'
 import dotenv from 'dotenv'
+import { getYouTubeKeys } from './services/getYoutubeKeys.js'
 
 export class API {
   apiKey: string
@@ -16,13 +24,14 @@ export class API {
     }
   }
 
-  async fetchData({ from, to, genres, page }: IFetchDataParams = {}) {
-    if ((from && from > 2023) || (from && from < 1950)) {
-      throw new Error('From can only be a number between 1950 to 2023')
+  async fetchMovies({ from, to, genres, page }: IFetchDataParams = {}) {
+    const currentYear = new Date().getFullYear()
+    if ((from && from > currentYear) || (from && from < 1950)) {
+      throw new Error('From can only be a number between 1950 to current year')
     }
 
-    if ((to && to > 2023) || (to && to < 1950)) {
-      throw new Error('From can only be a number between 1950 to 2023')
+    if ((to && to > currentYear) || (to && to < 1950)) {
+      throw new Error('From can only be a number between 1950 to curent year')
     }
 
     let genreIdsStr: string | undefined
@@ -69,7 +78,7 @@ export class API {
     }
   }
 
-  async fetchDataFromID(movieID: number) {
+  async fetchMovieFromID(movieID: number) {
     const API_CONFIG = {
       url: `https://api.themoviedb.org/3/movie/${movieID}`,
       method: 'get',
@@ -123,7 +132,7 @@ export class API {
     }
   }
 
-  async fetchDataFromSearch({ query, page }: { query: string; page: number }) {
+  async fetchMoviesFromSearch({ query, page }: { query: string; page: number }) {
     const API_CONFIG: IAPIConfig = {
       url: 'https://api.themoviedb.org/3/search/movie',
       method: 'get',
@@ -143,12 +152,31 @@ export class API {
       return []
     }
   }
+
+  async fetchMovieTrailers(movieId: number) {
+    const API_CONFIG: IAPIConfig = {
+      url: `https://api.themoviedb.org/3/movie/${movieId}/videos`,
+      method: 'get',
+      params: {
+        api_key: this.apiKey,
+      },
+    }
+
+    try {
+      const response: APIResponseTrailer = await axios(API_CONFIG)
+
+      return getYouTubeKeys(response.data.results)
+    } catch (err) {
+      console.error(err)
+      return []
+    }
+  }
 }
 
 // const api = new API()
 
-// const request = { movieID: 505642 }
-// const test = await api.fetchData(request)
+// const request = { from: 2023, to: 2023, page: 1, genres: [28] }
+// const test = await api.fetchMovies(request)
 // console.log(test)
 
 // const API_URL2 =

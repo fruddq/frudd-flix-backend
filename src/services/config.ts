@@ -2,6 +2,7 @@ import dotenv from 'dotenv'
 dotenv.config()
 
 export const API_URL = 'https://api.themoviedb.org/3/'
+export const FRONTEND_URL = 'http://localhost:5173'
 
 export const genreList = [
   { id: 28, name: 'Action' },

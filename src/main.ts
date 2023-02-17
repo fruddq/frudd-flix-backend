@@ -1,12 +1,13 @@
 import express from 'express'
 import { router } from './routes/api.js'
 import cors from 'cors'
+import { FRONTEND_URL } from './services/config.js'
 
 const app = express()
 
 app.use(
   cors({
-    origin: ['http://localhost:5173'],
+    origin: [FRONTEND_URL],
   }),
 )
 
