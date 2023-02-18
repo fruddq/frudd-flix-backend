@@ -69,16 +69,11 @@ export class API {
       API_CONFIG.params.with_genres = genreIdsStr
     }
 
-    try {
-      const response: IAPIResponse = await axios(API_CONFIG)
-      return response.data
-    } catch (err) {
-      console.error(err)
-      return []
-    }
+    const response: IAPIResponse = await axios(API_CONFIG)
+    return response.data
   }
 
-  async fetchMovieFromID(movieID: number) {
+  async fetchMovieFromID(movieID: number): Promise<IMovie> {
     const API_CONFIG = {
       url: `https://api.themoviedb.org/3/movie/${movieID}`,
       method: 'get',
@@ -88,48 +83,43 @@ export class API {
       },
     }
 
-    try {
-      const response: APIResponseFromID = await axios(API_CONFIG)
+    const response: APIResponseFromID = await axios(API_CONFIG)
 
-      const {
-        adult,
-        backdrop_path,
-        id,
-        original_language,
-        original_title,
-        overview,
-        popularity,
-        poster_path,
-        title,
-        vote_average,
-        vote_count,
-        release_date,
-        genres,
-        video,
-      } = response.data
+    const {
+      adult,
+      backdrop_path,
+      id,
+      original_language,
+      original_title,
+      overview,
+      popularity,
+      poster_path,
+      title,
+      vote_average,
+      vote_count,
+      release_date,
+      genres,
+      video,
+    } = response.data
 
-      const resultFromID: IMovie = {
-        adult,
-        backdrop_path,
-        id,
-        original_language,
-        original_title,
-        overview,
-        popularity,
-        poster_path,
-        title,
-        vote_average,
-        vote_count,
-        release_date,
-        genre_ids: lodash.map(genres, 'id'),
-        video,
-      }
-
-      return resultFromID
-    } catch (err) {
-      console.error(err)
-      return []
+    const resultFromID: IMovie = {
+      adult,
+      backdrop_path,
+      id,
+      original_language,
+      original_title,
+      overview,
+      popularity,
+      poster_path,
+      title,
+      vote_average,
+      vote_count,
+      release_date,
+      genre_ids: lodash.map(genres, 'id'),
+      video,
     }
+
+    return resultFromID
   }
 
   async fetchMoviesFromSearch({ query, page }: { query: string; page: number }) {
@@ -144,13 +134,8 @@ export class API {
       },
     }
 
-    try {
-      const response: IAPIResponse = await axios(API_CONFIG)
-      return response.data
-    } catch (err) {
-      console.error(err)
-      return []
-    }
+    const response: IAPIResponse = await axios(API_CONFIG)
+    return response.data
   }
 
   async fetchMovieTrailers(movieId: number) {
@@ -162,14 +147,9 @@ export class API {
       },
     }
 
-    try {
-      const response: APIResponseTrailer = await axios(API_CONFIG)
+    const response: APIResponseTrailer = await axios(API_CONFIG)
 
-      return getYouTubeKeys(response.data.results)
-    } catch (err) {
-      console.error(err)
-      return []
-    }
+    return getYouTubeKeys(response.data.results)
   }
 }
 
