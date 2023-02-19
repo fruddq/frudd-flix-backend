@@ -29,6 +29,7 @@ export class API {
 
   async fetchMovies({ from, to, genres, page }: IFetchDataParams = {}) {
     const currentYear = new Date().getFullYear()
+
     if ((from && from > currentYear) || (from && from < 1950)) {
       throw new Error('From can only be a number between 1950 to current year')
     }
@@ -37,11 +38,11 @@ export class API {
       throw new Error('From can only be a number between 1950 to curent year')
     }
 
-    let genreIdsStr: string | undefined
     if (genres && getValidGenres(genres).length > 0) {
       throw new Error('Genres must be a valid genre ID from genreList')
     }
-    genreIdsStr = genres?.join(',')
+
+    const genreIdsStr = genres?.join(',')
 
     const API_CONFIG: IAPIConfig = {
       url: `${API_URL}discover/movie`,
