@@ -1,5 +1,7 @@
 import axios from 'axios'
+import dotenv from 'dotenv'
 import lodash from 'lodash'
+
 import type {
   APIResponseFromID,
   APIResponseTrailer,
@@ -8,8 +10,9 @@ import type {
   IFetchDataParams,
   IMovie,
 } from './models/Models.js'
-import { API_URL, genreList } from './services/config.js'
-import dotenv from 'dotenv'
+
+import { API_URL } from './services/config.js'
+import { getValidGenres } from './services/getValidGenres.js'
 import { getYouTubeKeys } from './services/getYoutubeKeys.js'
 
 export class API {
@@ -35,13 +38,10 @@ export class API {
     }
 
     let genreIdsStr: string | undefined
-    if (genres) {
-      const invalidGenres = genres.filter((genreId) => !genreList.find((genre) => genre.id === genreId))
-      if (invalidGenres.length > 0) {
-        throw new Error('Genres must be a valid genre ID from genreList')
-      }
-      genreIdsStr = genres.join(',')
+    if (genres && getValidGenres(genres).length > 0) {
+      throw new Error('Genres must be a valid genre ID from genreList')
     }
+    genreIdsStr = genres?.join(',')
 
     const API_CONFIG: IAPIConfig = {
       url: `${API_URL}discover/movie`,
@@ -148,7 +148,6 @@ export class API {
     }
 
     const response: APIResponseTrailer = await axios(API_CONFIG)
-
     return getYouTubeKeys(response.data.results)
   }
 }
