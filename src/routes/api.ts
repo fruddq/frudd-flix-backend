@@ -1,50 +1,178 @@
-// import axios from 'axios'
-import express from 'express'
 import { API } from '../API.js'
-
-export const router = express.Router()
+import type { App } from '../main.js'
+import httpErrors from 'http-errors'
 
 const api = new API()
 
-router.get('/id', async (req, res) => {
-  const results = await api.fetchMovieFromID(Number(req.query['movieID']))
-  res.send(results)
-})
+const API_PREFIX = '/api/v1'
 
-router.get('/trailers', async (req, res) => {
-  const results = await api.fetchMovieTrailers(Number(req.query['movieID']))
-  res.send(results)
-})
+export const initiateRoutes = (app: App) => {
+  app.route({
+    method: 'GET',
+    url: `${API_PREFIX}/id`,
 
-router.get('/search', async (req, res) => {
-  const query = req.query['query'] as string
-  const page = Number(req.query['page'])
-  const results = await api.fetchMoviesFromSearch({ query, page })
+    handler: async function (req, reply) {
+      // rome-ignore lint/suspicious/noExplicitAny: <explanation>
+      const query = req.query as any as {
+        readonly movieID?: string
+      }
 
-  res.send(results)
-})
+      const movieID = query.movieID ? Number(query.movieID) : undefined
 
-router.get('/discover', async (req, res) => {
-  const page = req.query['page'] ? Number(req.query['page']) : undefined
-  const results = await api.fetchMovies({ page })
+      if (!movieID) {
+        throw new httpErrors.BadRequest('Must send in a valid movie ID')
+      }
 
-  res.send(results)
-})
+      reply.send(await api.fetchMovieFromID(movieID))
+    },
+  })
 
-router.get('/browse', async (req, res) => {
-  const from = req.query['from'] ? Number(req.query['from']) : undefined
-  const to = req.query['to'] ? Number(req.query['to']) : undefined
-  const page = req.query['page'] ? Number(req.query['page']) : undefined
+  app.route({
+    method: 'GET',
+    url: `${API_PREFIX}/trailers`,
 
-  const stringGenres = req.query['genres']
-  let genres: number[] | undefined
+    handler: async function (req, reply) {
+      // rome-ignore lint/suspicious/noExplicitAny: <explanation>
+      const query = req.query as any as {
+        readonly movieID?: string
+      }
 
-  if (stringGenres) {
-    const arrGenres = Array.isArray(stringGenres) ? stringGenres : [stringGenres]
-    genres = arrGenres.map((genre) => Number(genre))
-  }
+      const movieID = query.movieID ? Number(query.movieID) : undefined
 
-  const results = await api.fetchMovies({ from, to, genres, page })
+      if (!movieID) {
+        throw new httpErrors.BadRequest('Must send in a valid movie ID')
+      }
 
-  res.send(results)
-})
+      reply.send(await api.fetchMovieTrailers(movieID))
+    },
+  })
+
+  app.route({
+    method: 'GET',
+    url: `${API_PREFIX}/search`,
+
+    handler: async function (req, reply) {
+      // rome-ignore lint/suspicious/noExplicitAny: <explanation>
+      const q = req.query as any as {
+        readonly page?: string
+        readonly query?: string
+      }
+
+      if (!q.query) {
+        throw new httpErrors.BadRequest('Must send in a valid query')
+      }
+
+      const page = q.page ? Number(q.page) : 1
+
+      reply.send(await api.fetchMoviesFromSearch({ query: q.query, page }))
+    },
+  })
+
+  app.route({
+    method: 'GET',
+    url: `${API_PREFIX}/discover`,
+
+    handler: async function (req, reply) {
+      // rome-ignore lint/suspicious/noExplicitAny: <explanation>
+      const query = req.query as any as {
+        readonly page?: string
+      }
+
+      const page = query.page ? Number(query.page) : undefined
+
+      reply.send(await api.fetchMovies({ page }))
+    },
+  })
+
+  app.route({
+    method: 'GET',
+    url: `${API_PREFIX}/browse`,
+    // schema: {
+    //   response: {
+    //     200: {
+    //       type: 'object',
+    //       properties: {
+    //         data: {
+    //           type: 'object',
+    //           properties: {
+    //             page: { type: 'string' },
+    //             results: {
+    //               type: 'array',
+    //               items: {
+    //                 type: 'object',
+    //                 properties: {
+    //                   adult: { type: 'boolean' },
+    //                   backdrop_path: { type: 'string' },
+    //                   genre_ids: {
+    //                     type: 'array',
+    //                     items: {
+    //                       type: 'number',
+    //                     },
+    //                   },
+    //                   id: { type: 'number' },
+    //                   original_language: { type: 'string' },
+    //                   original_title: { type: 'string' },
+    //                   overview: { type: 'string' },
+    //                   popularity: { type: 'number' },
+    //                   poster_path: { type: 'string' },
+    //                   release_date: { type: 'string' },
+    //                   title: { type: 'string' },
+    //                   video: { type: 'boolean' },
+    //                   vote_average: { type: 'number' },
+    //                   vote_count: { type: 'number' },
+    //                 },
+    //               },
+    //             },
+    //             total_pages: { type: 'number' },
+    //             total_results: { type: 'number' },
+    //           },
+    //         },
+    //       },
+    //     },
+    //   },
+    // },
+    handler: async function (req, reply) {
+      // rome-ignore lint/suspicious/noExplicitAny: <explanation>
+      const query = req.query as any as {
+        readonly from?: string
+        readonly to?: string
+        readonly page?: string
+        readonly genres?: string
+      }
+
+      const from = query.from ? Number(query.from) : undefined
+      const to = query.to ? Number(query.to) : undefined
+      const page = query.page ? Number(query.page) : undefined
+      const stringGenres = query.genres
+
+      let genres: number[] | undefined
+
+      if (stringGenres) {
+        const arrGenres = Array.isArray(stringGenres) ? stringGenres : [stringGenres]
+        genres = arrGenres.map((genre) => Number(genre))
+      }
+
+      reply.send(await api.fetchMovies({ from, to, genres, page }))
+    },
+  })
+
+  app.route({
+    method: 'GET',
+    url: `${API_PREFIX}/test`,
+    schema: {
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            subDomain: { type: 'string' },
+          },
+        },
+      },
+    },
+    handler: function (__req, reply) {
+      reply.send({
+        subDomain: process.env['FLY_APP_NAME'] || 'unknown',
+      })
+    },
+  })
+}
