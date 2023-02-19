@@ -28,16 +28,13 @@ router.get('/discover', async (req, res) => {
   const from = req.query['from'] ? Number(req.query['from']) : undefined
   const to = req.query['to'] ? Number(req.query['to']) : undefined
   const page = req.query['page'] ? Number(req.query['page']) : undefined
-  let genres: number[] | undefined
 
   const stringGenres = req.query['genres']
-    ? Array.isArray(req.query['genres'])
-      ? req.query['genres']
-      : [req.query['genres']]
-    : undefined
+  let genres: number[] | undefined
 
-  if (Array.isArray(stringGenres)) {
-    genres = stringGenres.map(Number)
+  if (stringGenres) {
+    const arrGenres = Array.isArray(stringGenres) ? stringGenres : [stringGenres]
+    genres = arrGenres.map((genre) => Number(genre))
   }
 
   const results = await api.fetchMovies({ from, to, genres, page })
