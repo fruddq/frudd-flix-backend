@@ -25,6 +25,13 @@ router.get('/search', async (req, res) => {
 })
 
 router.get('/discover', async (req, res) => {
+  const page = req.query['page'] ? Number(req.query['page']) : undefined
+  const results = await api.fetchMovies({ page })
+
+  res.send(results)
+})
+
+router.get('/browse', async (req, res) => {
   const from = req.query['from'] ? Number(req.query['from']) : undefined
   const to = req.query['to'] ? Number(req.query['to']) : undefined
   const page = req.query['page'] ? Number(req.query['page']) : undefined
