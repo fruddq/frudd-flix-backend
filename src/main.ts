@@ -30,4 +30,21 @@ await app.register(import('@fastify/static'), {
 
 initiateRoutes(app)
 
-await app.listen({ port: parseInt(process.env['PORT'] || '', 10) || 3000 })
+await app.register(function (instance, _options, done) {
+  instance.setNotFoundHandler(function (request, reply) {
+    if (request.raw.url?.startsWith('/api')) {
+      reply.status(404).send({
+        success: false,
+        error: {
+          kind: 'user_input',
+          message: 'Not Found',
+        },
+      })
+    } else {
+      reply.status(200).sendFile('index.html')
+    }
+  })
+  done()
+})
+
+await app.listen({ port: parseInt(process.env['PORT'] || '', 10) || 3000, host: '::' })
